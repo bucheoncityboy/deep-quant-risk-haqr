@@ -27,59 +27,53 @@ HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확
 
 ---
 
+
 ## 🏗️ Architecture
 
-```mermaid
-flowchart TB
-    subgraph Input["📥 Input Layer"]
-        I[Input Features]
-    end
-
-    subgraph Features["Feature Groups"]
-        direction LR
-        subgraph TrendGroup["Trend Features"]
-            T1["rets"]
-            T2["rets2"]
-            T3["rets3"]
-        end
-        subgraph MarketGroup["Market Features"]
-            M1["regime"]
-            M2["hist_vol"]
-        end
-    end
-
-    subgraph FactorAttention["🔍 Factor-Level Attention"]
-        direction LR
-        FA1["Trend Encoder"]
-        FA2["Market Encoder"]
-    end
-
-    subgraph GroupAttention["⚖️ Group-Level Attention"]
-        GA["Trend vs Market Weighting"]
-    end
-
-    subgraph Context["Context Vector"]
-        CV["Aggregated Representation"]
-    end
-
-    subgraph QuantileHead["📊 Non-Crossing Quantile Head"]
-        Q05["Q(0.05)"]
-        Q50["Q(0.50)"]
-        Q95["Q(0.95)"]
-        Q05 -->|"+δ₁ (softplus)"| Q50
-        Q50 -->|"+δ₂ (softplus)"| Q95
-    end
-
-    I --> TrendGroup
-    I --> MarketGroup
-    TrendGroup --> FA1
-    MarketGroup --> FA2
-    FA1 --> GA
-    FA2 --> GA
-    GA --> CV
-    CV --> QuantileHead
 ```
-
+                    ┌──────────────────────────────────┐
+                    │        HAQR Architecture         │
+                    └──────────────────────────────────┘
+                                    │
+                              [Input Layer]
+                                    │
+              ┌─────────────────────┴─────────────────────┐
+              │                                           │
+              ▼                                           ▼
+    ┌─────────────────────┐                   ┌─────────────────────┐
+    │   Trend Features    │                   │   Market Features   │
+    │ (rets, rets2, rets3)│                   │(regime, hist_vol)   │
+    └─────────┬───────────┘                   └─────────┬───────────┘
+              │                                         │
+              ▼                                         ▼
+    ┌─────────────────────┐                   ┌─────────────────────┐
+    │  Factor-Level       │                   │  Factor-Level       │
+    │  Attention Encoder  │                   │  Attention Encoder  │
+    └─────────┬───────────┘                   └─────────┬───────────┘
+              │                                         │
+              └────────────────┬────────────────────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ Group-Level         │
+                    │ Attention           │
+                    │ (Trend vs Market)   │
+                    └─────────┬───────────┘
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │   Context Vector    │
+                    └─────────┬───────────┘
+                              │
+                              ▼
+              ┌───────────────────────────────────┐
+              │   Non-Crossing Quantile Head      │
+              │                                   │
+              │  Q(0.05) ──→ Q(0.50) ──→ Q(0.95)  │
+              │        +δ₁        +δ₂             │
+              │     (softplus)  (softplus)        │
+              └───────────────────────────────────┘
+```
 
 ---
 
