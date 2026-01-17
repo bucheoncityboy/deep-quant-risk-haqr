@@ -28,8 +28,53 @@ HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확
 ---
 
 ## 🏗️ Architecture
+
 ```
-https://github.com/bucheoncityboy/HAQR-Hierarchical-Attention-Quantile-Regression/issues/1#issue-3824922380
+                    ┌──────────────────────────────────┐
+                    │        HAQR Architecture         │
+                    └──────────────────────────────────┘
+                                    │
+                              [Input Layer]
+                                    │
+              ┌─────────────────────┴─────────────────────┐
+              │                                           │
+              ▼                                           ▼
+    ┌─────────────────────┐                   ┌─────────────────────┐
+    │   Trend Features    │                   │   Market Features   │
+    │ (rets, rets2, rets3)│                   │(regime, hist_vol)   │
+    └─────────┬───────────┘                   └─────────┬───────────┘
+              │                                         │
+              ▼                                         ▼
+    ┌─────────────────────┐                   ┌─────────────────────┐
+    │  Factor-Level       │                   │  Factor-Level       │
+    │  Attention Encoder  │                   │  Attention Encoder  │
+    └─────────┬───────────┘                   └─────────┬───────────┘
+              │                                         │
+              └────────────────┬────────────────────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ Group-Level         │
+                    │ Attention           │
+                    │ (Trend vs Market)   │
+                    └─────────┬───────────┘
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │   Context Vector    │
+                    └─────────┬───────────┘
+                              │
+                              ▼
+              ┌───────────────────────────────────┐
+              │   Non-Crossing Quantile Head      │
+              │                                   │
+              │  Q(0.05) ──→ Q(0.50) ──→ Q(0.95)  │
+              │        +δ₁        +δ₂             │
+              │     (softplus)  (softplus)        │
+              └───────────────────────────────────┘
+```
+
+---
 
 ## 📁 Project Structure
 
@@ -63,8 +108,8 @@ HAQR/
 
 ```bash
 # Clone the repository
-git clone https://github.com/bucheoncityboy/HAQR-Hierarchical-Attention-Quantile-Regression.git
-cd HAQR-Hierarchical-Attention-Quantile-Regression
+git clone https://github.com/YOUR_USERNAME/HAQR.git
+cd HAQR
 
 # Create virtual environment (optional but recommended)
 python -m venv venv
@@ -211,8 +256,43 @@ data = dual_regime(
 
 ---
 
+## 📝 Citation
+
+```bibtex
+@article{haqr2024,
+  title={HAQR: Hierarchical Attention Quantile Regression for Financial Time Series Forecasting},
+  author={Kim, Jaewon},
+  year={2024}
+}
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
 ## 📧 Contact
 
 - **Author**: Kim Jaewon
-- **Email**: [kjw582390@gmail.com]
+- **Email**: [your-email@example.com]
 
+---
+
+<p align="center">
+  Made with ❤️ for Quantitative Finance Research
+</p>
