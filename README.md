@@ -30,39 +30,48 @@ HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확
 ## 🏗️ Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              HAQR Architecture                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  [Input Layer]                                                               │
-│      │                                                                       │
-│      ├── Trend Features (rets, rets2, rets3)                                │
-│      │       │                                                               │
-│      │       └── Factor-Level Attention Encoder ─────┐                      │
-│      │                                                │                      │
-│      └── Market Features (regime, historical_vol)    │                      │
-│              │                                        │                      │
-│              └── Factor-Level Attention Encoder ─────┤                      │
-│                                                       │                      │
-│                                                       ▼                      │
-│                                          ┌─────────────────────┐            │
-│                                          │ Group-Level Attention│            │
-│                                          │   (Trend vs Market)  │            │
-│                                          └──────────┬──────────┘            │
-│                                                     │                        │
-│                                                     ▼                        │
-│                                          ┌─────────────────────┐            │
-│                                          │   Context Vector     │            │
-│                                          └──────────┬──────────┘            │
-│                                                     │                        │
-│                                                     ▼                        │
-│                           ┌─────────────────────────────────────────────┐   │
-│                           │      Non-Crossing Quantile Head             │   │
-│                           │  Q(0.05) ─→ Q(0.50) ─→ Q(0.95)              │   │
-│                           │         +δ₁(softplus)  +δ₂(softplus)        │   │
-│                           └─────────────────────────────────────────────┘   │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+                    ┌──────────────────────────────────┐
+                    │        HAQR Architecture         │
+                    └──────────────────────────────────┘
+                                    │
+                              [Input Layer]
+                                    │
+              ┌─────────────────────┴─────────────────────┐
+              │                                           │
+              ▼                                           ▼
+    ┌─────────────────────┐                   ┌─────────────────────┐
+    │   Trend Features    │                   │   Market Features   │
+    │ (rets, rets2, rets3)│                   │(regime, hist_vol)   │
+    └─────────┬───────────┘                   └─────────┬───────────┘
+              │                                         │
+              ▼                                         ▼
+    ┌─────────────────────┐                   ┌─────────────────────┐
+    │  Factor-Level       │                   │  Factor-Level       │
+    │  Attention Encoder  │                   │  Attention Encoder  │
+    └─────────┬───────────┘                   └─────────┬───────────┘
+              │                                         │
+              └────────────────┬────────────────────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │ Group-Level         │
+                    │ Attention           │
+                    │ (Trend vs Market)   │
+                    └─────────┬───────────┘
+                              │
+                              ▼
+                    ┌─────────────────────┐
+                    │   Context Vector    │
+                    └─────────┬───────────┘
+                              │
+                              ▼
+              ┌───────────────────────────────────┐
+              │   Non-Crossing Quantile Head      │
+              │                                   │
+              │  Q(0.05) ──→ Q(0.50) ──→ Q(0.95)  │
+              │        +δ₁        +δ₂             │
+              │     (softplus)  (softplus)        │
+              └───────────────────────────────────┘
 ```
 
 ---
@@ -243,38 +252,18 @@ data = dual_regime(
     prob_switch=0.20,    # 레짐 전환 확률
     stdev=0.0145         # 노이즈 표준편차
 )
-```
 
----
+## 📄 License
 
-## 📝 Citation
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-```bibtex
-@article{haqr2024,
-  title={HAQR: Hierarchical Attention Quantile Regression for Financial Time Series Forecasting},
-  author={Kim, Jaewon},
-  year={2024}
-}
-```
-
----
-
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
 
 ---
 
 ## 📧 Contact
 
 - **Author**: Kim Jaewon
-- **Email**: [your-email@example.com]
+- **Email**: [kjw582390@gmail.com]
 
+---
 
