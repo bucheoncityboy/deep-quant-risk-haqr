@@ -108,8 +108,8 @@ HAQR/
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/HAQR.git
-cd HAQR
+git clone https://github.com/bucheoncityboy/HAQR-Hierarchical-Attention-Quantile-Regression.git
+cd HAQR-Hierarchical-Attention-Quantile-Regression
 
 # Create virtual environment (optional but recommended)
 python -m venv venv
