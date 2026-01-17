@@ -252,11 +252,7 @@ data = dual_regime(
     prob_switch=0.20,    # 레짐 전환 확률
     stdev=0.0145         # 노이즈 표준편차
 )
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
+```
 
 ---
 
@@ -264,6 +260,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Author**: Kim Jaewon
 - **Email**: [kjw582390@gmail.com]
-
----
 
