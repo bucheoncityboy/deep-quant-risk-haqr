@@ -256,43 +256,8 @@ data = dual_regime(
 
 ---
 
-## 📝 Citation
-
-```bibtex
-@article{haqr2024,
-  title={HAQR: Hierarchical Attention Quantile Regression for Financial Time Series Forecasting},
-  author={Kim, Jaewon},
-  year={2024}
-}
-```
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
----
-
 ## 📧 Contact
 
 - **Author**: Kim Jaewon
-- **Email**: [your-email@example.com]
+- **Email**: [kjw582390@gmail.com]
 
----
-
-<p align="center">
-  Made with ❤️ for Quantitative Finance Research
-</p>
