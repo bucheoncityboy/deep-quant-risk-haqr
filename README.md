@@ -29,49 +29,9 @@ HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확
 
 ## 🏗️ Architecture
 ```
-                    ┌──────────────────────────────────┐
-                    │        HAQR Architecture         │
-                    └──────────────────────────────────┘
-                                    │
-                              [Input Layer]
-                                    │
-              ┌─────────────────────┴─────────────────────┐
-              │                                           │
-              ▼                                           ▼
-    ┌─────────────────────┐                   ┌─────────────────────┐
-    │   Trend Features    │                   │   Market Features   │
-    │ (rets, rets2, rets3)│                   │(regime, hist_vol)   │
-    └─────────┬───────────┘                   └─────────┬───────────┘
-              │                                         │
-              ▼                                         ▼
-    ┌─────────────────────┐                   ┌─────────────────────┐
-    │  Factor-Level       │                   │  Factor-Level       │
-    │  Attention Encoder  │                   │  Attention Encoder  │
-    └─────────┬───────────┘                   └─────────┬───────────┘
-              │                                         │
-              └────────────────┬────────────────────────┘
-                               │
-                               ▼
-                    ┌─────────────────────┐
-                    │ Group-Level         │
-                    │ Attention           │
-                    │ (Trend vs Market)   │
-                    └─────────┬───────────┘
-                              │
-                              ▼
-                    ┌─────────────────────┐
-                    │   Context Vector    │
-                    └─────────┬───────────┘
-                              │
-                              ▼
-              ┌───────────────────────────────────┐
-              │   Non-Crossing Quantile Head      │
-              │                                   │
-              │  Q(0.05) ──→ Q(0.50) ──→ Q(0.95)  │
-              │        +δ₁        +δ₂             │
-              │     (softplus)  (softplus)        │
-              └───────────────────────────────────┘
-```
+<img width="659" height="883" alt="image" src="https://github.com/user-attachments/assets/24ed6866-c044-4ea4-bbb6-ff1c913ac5ee" />
+
+
 ---
 
 ## 📁 Project Structure
