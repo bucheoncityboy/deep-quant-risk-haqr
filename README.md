@@ -29,9 +29,9 @@ HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확
 
 ## 🏗️ Architecture
 ```
-<img width="659" height="883" alt="image" src="https://github.com/user-attachments/assets/24ed6866-c044-4ea4-bbb6-ff1c913ac5ee" />
+[<img width="659" height="883" alt="image" src="https://github.com/user-attachments/assets/24ed6866-c044-4ea4-bbb6-ff1c913ac5ee" />
 
-
+](https://github.com/bucheoncityboy/HAQR-Hierarchical-Attention-Quantile-Regression/issues/1)
 ---
 
 ## 📁 Project Structure
