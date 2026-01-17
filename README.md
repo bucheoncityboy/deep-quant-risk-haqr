@@ -28,7 +28,6 @@ HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확
 ---
 
 ## 🏗️ Architecture
-
 ```
                     ┌──────────────────────────────────┐
                     │        HAQR Architecture         │
@@ -73,7 +72,6 @@ HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확
               │     (softplus)  (softplus)        │
               └───────────────────────────────────┘
 ```
-
 ---
 
 ## 📁 Project Structure
