@@ -12,6 +12,18 @@
 
 ---
 
+## 📌 Executive Summary
+
+| Category | Details |
+| :--- | :--- |
+| **Core Objective** | 금융 시계열의 불확실성 정량화. 점 예측(point prediction)을 넘어 **분위수 회귀 예측 구간** + 해석 가능한 어텐션 가중치 제공. Meta-Labeling 등 기존 접근의 한계(불확실성 미반영·교차 분위수) 극복 |
+| **Key Architecture** | Factor-Level → Group-Level **2단계 계층 어텐션(Hierarchical Attention Network)** + Softplus 델타 기반 **Non-Crossing Quantile Head** (Q5 < Q50 < Q95 보장) + **Intrinsic Uncertainty** (별도 교정 불필요) |
+| **Performance** | **Pinball Loss 0.00584** (LGBM 0.00612 대비 ↓) · **Sharpe 1.05** (LGBM 0.82 대비 ↑) · PSR 0.78 · DSR 0.45 · F-Fidelity XAI 검증 통과 · **Monte Carlo N=50** Ablation/경제성 검증 |
+| **Tech Stack** | Python 3.8+, TensorFlow 2.x, SciPy, Monte Carlo 시뮬레이션, FastAPI 서빙 (alpha-serve) |
+| **실험 구성** | SOTA 비교(LGBM/LagLlama) · 불확실성 검증 · XAI(F-Fidelity) · 경제적 타당성(M3 전략) · 아키텍처/목적함수 Ablation · Dual-Regime AR(3) 데이터 생성 |
+
+---
+
 ## 📖 Overview
 
 HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확실성을 정량화**하기 위해 설계된 딥러닝 모델입니다. 기존의 점 예측(point prediction) 방식을 넘어, **분위수 회귀(Quantile Regression)**를 통해 예측 구간을 제공하며, **계층적 어텐션 메커니즘(Hierarchical Attention Network)**을 활용하여 해석 가능한 예측을 수행합니다.
