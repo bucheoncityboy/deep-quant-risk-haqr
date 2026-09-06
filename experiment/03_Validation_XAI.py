@@ -108,41 +108,6 @@ haqr_model.fit(ft_dataset, epochs=5, verbose=1)
 print("[F-Fidelity] Fine-tuning 완료. 평가를 시작합니다.\n")
 
 # -----------------------------------------------------------------------------
-# [F-Fidelity Step] 모델 Fine-tuning (Random Masking 적용)
-# 리뷰어 지적 사항: 마스킹된 데이터에 대해 모델을 적응시켜 OOD 문제를 해결해야 함
-# -----------------------------------------------------------------------------
-print("\n[F-Fidelity] Fine-tuning 시작 (Random Masking Adaptation)...")
-
-# Fine-tuning용 데이터셋 생성 (배치 단위로 랜덤 마스킹 적용)
-def create_masked_dataset(trend, market, y, batch_size=64, mask_rate=0.1):
-    def _mask_step(inputs, targets):
-        trend_in, market_in = inputs['trend_input'], inputs['market_input']
-        
-        # Trend Masking
-        mask_t = tf.random.uniform(tf.shape(trend_in)) > mask_rate
-        trend_masked = trend_in * tf.cast(mask_t, tf.float32)
-        
-        # Market Masking
-        mask_m = tf.random.uniform(tf.shape(market_in)) > mask_rate
-        market_masked = market_in * tf.cast(mask_m, tf.float32)
-        
-        return {'trend_input': trend_masked, 'market_input': market_masked}, targets
-
-    dataset = tf.data.Dataset.from_tensor_slices(
-        ({'trend_input': trend, 'market_input': market}, y)
-    )
-    dataset = dataset.shuffle(1024).batch(batch_size).map(_mask_step)
-    return dataset
-
-# Fine-tuning 수행
-# - Learning Rate를 낮게 설정(1e-5)하여 기존 지식을 유지하며 적응
-# - Epochs는 논문에 따라 적은 횟수(5회) 수행
-ft_dataset = create_masked_dataset(X_train_trend_sc, X_train_market_sc, y_train_sc)
-haqr_model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5), loss=pinball_loss)
-haqr_model.fit(ft_dataset, epochs=5, verbose=1)
-
-print("[F-Fidelity] Fine-tuning 완료. 평가를 시작합니다.\n")
-# -----------------------------------------------------------------------------
 
 # Baseline Loss (Fine-tuned 모델 기준)
 base_pred = haqr_model.predict({'trend_input': X_test_trend_sc, 'market_input': X_test_market_sc}, verbose=0)
