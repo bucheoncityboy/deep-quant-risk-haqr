@@ -1,15 +1,15 @@
 # HAQR: Hierarchical Attention Quantile Regression
 
-> 점 예측을 넘어서는 꼬리위험 정량화 모델. 2단계 계층 어텐션으로 피처 중요도를 학습하고, Non-Crossing Quantile Head로 분위수 교차 없는 예측 구간을 만든다. 금융 시계열의 불확실성을 모델 스스로 정량화한다.
+> 금융 시계열의 꼬리위험을 정량화하는 모델. 2단계 계층 어텐션으로 피처 중요도를 학습하고, Non-Crossing Quantile Head로 분위수 교차 없는 예측 구간을 만든다. 불확실성 구간을 모델 스스로 출력한다.
 
 ## ⭐ 성과
 
-- **Sharpe 1.05** — 튜닝된 LGBM(0.82) 대비 개선
-- **Pinball Loss 0.00584** — LGBM(0.00612) 대비 하락
-- **손실구간 91% 적중** — 분위수 예측이 실제 손실을 놓치는 비율을 크게 낮췄다
-- **PSR 0.78 · DSR 0.45** — 다중 시도 편향을 보정한 확률적 샤프 지표
-- **Non-Crossing 보장 구조** — Q5 < Q50 < Q95를 Softplus 델타로 원천 보장
-- **F-Fidelity XAI 검증 통과** — 어텐션 가중치의 충실성(faithfulness) 입증
+- **Sharpe 1.05**, 튜닝된 LGBM(0.82) 대비 개선
+- **Pinball Loss 0.00584**, LGBM(0.00612) 대비 하락
+- **손실구간 91% 적중**
+- **PSR 0.78 · DSR 0.45**, 다중 시도 편향을 보정한 확률적 샤프 지표
+- **Non-Crossing 보장**: Q5 < Q50 < Q95를 Softplus 델타로 원천 보장
+- **F-Fidelity XAI 검증 통과**, 어텐션 가중치의 충실성 입증
 
 ## 핵심 기여
 
@@ -82,9 +82,9 @@
 
 ### XAI 검증 (F-Fidelity)
 
-- **MoRF**: 중요 피처를 먼저 제거하면 Loss 급상승
-- **LeRF**: 비중요 피처를 먼저 제거해도 Loss 유지
-- **F-Fidelity Score**: MoRF - LeRF > 0 (유의미한 차이)
+- MoRF: 중요 피처를 먼저 제거하면 Loss 급상승
+- LeRF: 비중요 피처를 먼저 제거해도 Loss 유지
+- F-Fidelity Score: MoRF - LeRF > 0 (유의미한 차이)
 
 ## 불확실성 인지 포지션 사이징 (M3 전략)
 
@@ -108,14 +108,14 @@ def calculate_m3_strategy(pred_quantiles, actual_returns, threshold):
 
 | 검증 | 내용 |
 |---|---|
-| `01_Validation_SOTA.py` | HAQR vs LGBM 비교 (N=100) |
-| `01_B_Validation_LagLlama.py` | Lag-Llama 비교 |
-| `02_Validation_Uncertainty.py` | PICP·MPIW 불확실성 정량화 검증 |
-| `03_Validation_XAI.py` | F-Fidelity 설명가능성 검증 |
-| `04_Validation_Economic.py` | PSR·DSR 경제적 성과 분석 |
-| `05_Validation_Ablation.py` | Monte Carlo Ablation 연구 |
+| SOTA | HAQR vs LGBM (N=100) |
+| Lag-Llama | 시계열 기초 모델 비교 |
+| 불확실성 | PICP·MPIW 정량화 검증 |
+| XAI | F-Fidelity 설명가능성 검증 |
+| 경제성 | PSR·DSR 성과 분석 |
+| Ablation | Monte Carlo 구성 제거 연구 |
 
-데이터는 **Dual-Regime AR(3) Process**로 생성한다. Regime 1(Normal)은 φ=(0.25, -0.20, 0.35), Regime 2(Crisis)는 φ=(-0.25, 0.20, -0.35), 전환 확률 0.20, 5,000 스텝.
+학습 데이터는 **Dual-Regime AR(3) Process**로 생성했다. Regime 1(Normal)은 φ=(0.25, -0.20, 0.35), Regime 2(Crisis)는 φ=(-0.25, 0.20, -0.35), 전환 확률 0.20, 5,000 스텝.
 
 ## 저장소 구조
 
