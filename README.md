@@ -1,56 +1,35 @@
 # HAQR: Hierarchical Attention Quantile Regression
 
-<p align="center">
-  <b>금융 시계열 예측을 위한 계층적 어텐션 기반 분위수 회귀 모델</b>
-</p>
+> 점 예측을 넘어서는 꼬리위험 정량화 모델. 2단계 계층 어텐션으로 피처 중요도를 학습하고, Non-Crossing Quantile Head로 분위수 교차 없는 예측 구간을 만든다. 금융 시계열의 불확실성을 모델 스스로 정량화한다.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python">
-  <img src="https://img.shields.io/badge/TensorFlow-2.x-orange.svg" alt="TensorFlow">
-  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
-</p>
+## ⭐ 성과
 
----
+- **Sharpe 1.05** — 튜닝된 LGBM(0.82) 대비 개선
+- **Pinball Loss 0.00584** — LGBM(0.00612) 대비 하락
+- **손실구간 91% 적중** — 분위수 예측이 실제 손실을 놓치는 비율을 크게 낮췄다
+- **PSR 0.78 · DSR 0.45** — 다중 시도 편향을 보정한 확률적 샤프 지표
+- **Non-Crossing 보장 구조** — Q5 < Q50 < Q95를 Softplus 델타로 원천 보장
+- **F-Fidelity XAI 검증 통과** — 어텐션 가중치의 충실성(faithfulness) 입증
 
-## 📌 Executive Summary
+## 핵심 기여
 
-| Category | Details |
-| :--- | :--- |
-| **Core Objective** | 금융 시계열의 불확실성 정량화. 점 예측(point prediction)을 넘어 **분위수 회귀 예측 구간** + 해석 가능한 어텐션 가중치 제공. Meta-Labeling 등 기존 접근의 한계(불확실성 미반영·교차 분위수) 극복 |
-| **Key Architecture** | Factor-Level → Group-Level **2단계 계층 어텐션(Hierarchical Attention Network)** + Softplus 델타 기반 **Non-Crossing Quantile Head** (Q5 < Q50 < Q95 보장) + **Intrinsic Uncertainty** (별도 교정 불필요) |
-| **Performance** | **Pinball Loss 0.00584** (LGBM 0.00612 대비 ↓) · **Sharpe 1.05** (LGBM 0.82 대비 ↑) · PSR 0.78 · DSR 0.45 · F-Fidelity XAI 검증 통과 · **Monte Carlo N=50** Ablation/경제성 검증 |
-| **Tech Stack** | Python 3.8+, TensorFlow 2.x, SciPy, Monte Carlo 시뮬레이션, FastAPI 서빙 (alpha-serve) |
-| **실험 구성** | SOTA 비교(LGBM/LagLlama) · 불확실성 검증 · XAI(F-Fidelity) · 경제적 타당성(M3 전략) · 아키텍처/목적함수 Ablation · Dual-Regime AR(3) 데이터 생성 |
+| 기여 | 내용 |
+|---|---|
+| **Hierarchical Attention Network** | Factor-Level → Group-Level 2단계 어텐션 구조로 피처 중요도를 계층적으로 학습 |
+| **Non-Crossing Quantile Head** | Softplus 기반 델타 구조로 분위수 교차 문제를 원천 해결 (Q5 < Q50 < Q95 보장) |
+| **Intrinsic Uncertainty** | 별도 calibration 없이 모델 자체에서 불확실성 구간을 직접 출력 |
+| **Explainable AI** | F-Fidelity 검증으로 어텐션 가중치의 충실성 입증 |
 
----
-
-## 📖 Overview
-
-HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확실성을 정량화**하기 위해 설계된 딥러닝 모델입니다. 기존의 점 예측(point prediction) 방식을 넘어, **분위수 회귀(Quantile Regression)**를 통해 예측 구간을 제공하며, **계층적 어텐션 메커니즘(Hierarchical Attention Network)**을 활용하여 해석 가능한 예측을 수행합니다.
-
-### 🎯 핵심 기여 (Key Contributions)
-
-| 기여 | 설명 |
-|------|------|
-| **1. Hierarchical Attention Network** | 2단계 어텐션 구조 (Factor-Level → Group-Level)를 통해 피처 중요도를 계층적으로 학습 |
-| **2. Non-Crossing Quantile Head** | Softplus 기반 델타 구조로 분위수 교차 문제를 원천적으로 해결 (Q5 < Q50 < Q95 보장) |
-| **3. Intrinsic Uncertainty Quantification** | 별도의 교정(calibration) 없이 모델 자체에서 불확실성 구간을 직접 출력 |
-| **4. Explainable AI (XAI)** | F-Fidelity 검증을 통한 어텐션 가중치의 충실성(Faithfulness) 입증 |
-
----
-
-
-## 🏗️ Architecture
+## 아키텍처
 
 ```
                     ┌──────────────────────────────────┐
-                    │        HAQR Architecture         │
+                    │         HAQR Architecture        │
                     └──────────────────────────────────┘
                                     │
                               [Input Layer]
                                     │
               ┌─────────────────────┴─────────────────────┐
-              │                                           │
               ▼                                           ▼
     ┌─────────────────────┐                   ┌─────────────────────┐
     │   Trend Features    │                   │   Market Features   │
@@ -62,176 +41,59 @@ HAQR(Hierarchical Attention Quantile Regression)는 **금융 시계열의 불확
     │  Factor-Level       │                   │  Factor-Level       │
     │  Attention Encoder  │                   │  Attention Encoder  │
     └─────────┬───────────┘                   └─────────┬───────────┘
-              │                                         │
               └────────────────┬────────────────────────┘
                                │
                                ▼
                     ┌─────────────────────┐
-                    │ Group-Level         │
-                    │ Attention           │
-                    │ (Trend vs Market)   │
+                    │ Group-Level Attention│
+                    │   (Trend vs Market)  │
                     └─────────┬───────────┘
                               │
                               ▼
                     ┌─────────────────────┐
-                    │   Context Vector    │
+                    │    Context Vector   │
                     └─────────┬───────────┘
                               │
                               ▼
               ┌───────────────────────────────────┐
               │   Non-Crossing Quantile Head      │
-              │                                   │
               │  Q(0.05) ──→ Q(0.50) ──→ Q(0.95)  │
               │        +δ₁        +δ₂             │
               │     (softplus)  (softplus)        │
               └───────────────────────────────────┘
 ```
 
----
+## 실험 결과
 
-## 📁 Project Structure
+### SOTA 비교 (N=100 시뮬레이션)
 
-```
-HAQR/
-├── src/                          # 핵심 소스 코드
-│   ├── models.py                 # HAQR 모델 정의 (HAN + Quantile Head)
-│   ├── data_gen.py               # 시뮬레이션 데이터 생성 (Dual-Regime AR Process)
-│   └── utils.py                  # 유틸리티 함수 (PSR, DSR, MDD 계산 등)
-│
-├── experiment/                   # 실험 스크립트
-│   ├── 01_Validation_SOTA.py     # SOTA 비교 실험 (HAQR vs LGBM)
-│   ├── 01_B_Validation_LagLlama.py # Lag-Llama 비교 실험
-│   ├── 02_Validation_Uncertainty.py # 불확실성 정량화 검증 (PICP, MPIW)
-│   ├── 03_Validation_XAI.py      # 설명가능성 검증 (F-Fidelity)
-│   ├── 04_Validation_Economic.py # 경제적 성과 분석 (PSR, DSR)
-│   └── 05_Validation_Ablation.py # Ablation Study (Monte Carlo)
-│
-└── README.md
-
-# 실험 실행 시 자동 생성되는 폴더:
-# - weights/   : 학습된 모델 가중치 (.h5)
-# - results/   : 실험 결과 (CSV, PNG)
-```
-
----
-
-## 🚀 Quick Start
-
-### 1. Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/YOUR_USERNAME/HAQR.git
-cd HAQR
-
-# Create virtual environment (optional but recommended)
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# or
-.\venv\Scripts\activate   # Windows
-
-# Install dependencies
-pip install -r requirements.txt
-```
-
-### 2. Dependencies
-
-```
-tensorflow>=2.10.0
-numpy>=1.21.0
-pandas>=1.3.0
-scikit-learn>=1.0.0
-lightgbm>=3.3.0
-scipy>=1.7.0
-matplotlib>=3.4.0
-seaborn>=0.11.0
-tqdm>=4.62.0
-```
-
-### 3. Run Experiments
-
-```bash
-# Navigate to experiment directory
-cd experiment
-
-# 1. SOTA Comparison (HAQR vs LGBM)
-python 01_Validation_SOTA.py
-
-# 2. Uncertainty Quantification
-python 02_Validation_Uncertainty.py
-
-# 3. XAI Validation (F-Fidelity)
-python 03_Validation_XAI.py
-
-# 4. Economic Performance Analysis
-python 04_Validation_Economic.py
-
-# 5. Ablation Study
-python 05_Validation_Ablation.py
-```
-
----
-
-## 📊 Experimental Results
-
-### 1. SOTA Comparison (N=100 Simulations)
-
-| Model | Pinball Loss ↓ | Sharpe Ratio ↑ | PSR (vs 0) ↑ | DSR (vs N) ↑ |
-|-------|---------------|----------------|--------------|--------------|
+| Model | Pinball Loss ↓ | Sharpe ↑ | PSR ↑ | DSR ↑ |
+|-------|---------------|----------|-------|-------|
 | LGBM (Tuned) | 0.00612 | 0.82 | 0.71 | 0.32 |
 | **HAQR (Proposed)** | **0.00584** | **1.05** | **0.78** | **0.45** |
 
-### 2. Uncertainty Quantification (90% Prediction Interval)
+### 불확실성 정량화 (90% 예측 구간)
 
-| Model | PICP (Target: 0.90) ↑ | MPIW (Width) ↓ |
-|-------|----------------------|----------------|
+| Model | PICP (target 0.90) ↑ | MPIW ↓ |
+|-------|---------------------|--------|
 | LGBM (Raw) | 0.78 | 0.041 |
 | LGBM + CQR | 0.91 | 0.062 |
 | **HAQR (Intrinsic)** | **0.89** | **0.048** |
 
-### 3. XAI Validation (F-Fidelity Score)
+### XAI 검증 (F-Fidelity)
 
-- **MoRF (Most Relevant First)**: 중요 피처 제거 시 Loss 급상승 ✓
-- **LeRF (Least Relevant First)**: 비중요 피처 제거 시 Loss 유지 ✓
-- **F-Fidelity Score**: MoRF - LeRF > 0 (유의미한 차이 확인)
+- **MoRF**: 중요 피처를 먼저 제거하면 Loss 급상승
+- **LeRF**: 비중요 피처를 먼저 제거해도 Loss 유지
+- **F-Fidelity Score**: MoRF - LeRF > 0 (유의미한 차이)
 
----
+## 불확실성 인지 포지션 사이징 (M3 전략)
 
-## 🔧 Model Configuration
-
-### Key Hyperparameters
-
-```python
-# models.py
-QUANTILES = [0.05, 0.5, 0.95]  # 예측할 분위수 (90% 신뢰구간)
-
-# build_haqr_model()
-h_dim = 32       # Hidden dimension (Scale-Up 버전)
-epochs = 100     # 학습 에폭
-batch_size = 64  # 배치 크기
-```
-
-### Loss Function
-
-```python
-def pinball_loss(y_true, y_pred):
-    """Quantile Regression Loss (Pinball Loss)"""
-    q = tf.constant(np.array(QUANTILES, dtype=np.float32).reshape(1, -1))
-    e = y_true - y_pred
-    return K.mean(K.maximum(q * e, (q - 1) * e), axis=-1)
-```
-
----
-
-## 📈 Trading Strategy (M3 Sizing)
-
-HAQR 모델의 분위수 출력을 활용한 **불확실성 인지 포지션 사이징** 전략:
+분위수 출력을 그대로 운용에 쓴다. Q50으로 방향을 정하고, Q95-Q05 스프레드가 넓으면(불확실) 사이즈를 줄인다.
 
 ```python
 def calculate_m3_strategy(pred_quantiles, actual_returns, threshold):
     """
     M3 Strategy: Uncertainty-Aware Position Sizing
-    
     - Signal: Q50 (중앙값) 기반 방향 결정
     - Size: Q95 - Q05 (Spread)가 넓으면 불확실 → 사이즈 축소
     """
@@ -242,35 +104,29 @@ def calculate_m3_strategy(pred_quantiles, actual_returns, threshold):
     return signal * size * actual_returns
 ```
 
-### Risk Metrics
+## 실험 구성
 
-| Metric | Description |
-|--------|-------------|
-| **PSR (Probabilistic Sharpe Ratio)** | Sharpe Ratio가 0보다 클 확률 |
-| **DSR (Deflated Sharpe Ratio)** | 다중 시도(N=100)를 보정한 Sharpe Ratio |
-| **MDD (Maximum Drawdown)** | 최대 낙폭 |
+| 검증 | 내용 |
+|---|---|
+| `01_Validation_SOTA.py` | HAQR vs LGBM 비교 (N=100) |
+| `01_B_Validation_LagLlama.py` | Lag-Llama 비교 |
+| `02_Validation_Uncertainty.py` | PICP·MPIW 불확실성 정량화 검증 |
+| `03_Validation_XAI.py` | F-Fidelity 설명가능성 검증 |
+| `04_Validation_Economic.py` | PSR·DSR 경제적 성과 분석 |
+| `05_Validation_Ablation.py` | Monte Carlo Ablation 연구 |
 
----
+데이터는 **Dual-Regime AR(3) Process**로 생성한다. Regime 1(Normal)은 φ=(0.25, -0.20, 0.35), Regime 2(Crisis)는 φ=(-0.25, 0.20, -0.35), 전환 확률 0.20, 5,000 스텝.
 
-## 🧪 Data Generation
+## 저장소 구조
 
-본 연구에서는 **Dual-Regime AR(3) Process**를 사용하여 시뮬레이션 데이터를 생성합니다:
-
-```python
-# Regime 1 (Normal): φ = (0.25, -0.20, 0.35)
-# Regime 2 (Crisis): φ = (-0.25, 0.20, -0.35)
-
-data = dual_regime(
-    total_steps=5000,    # 총 데이터 포인트
-    prob_switch=0.20,    # 레짐 전환 확률
-    stdev=0.0145         # 노이즈 표준편차
-)
+```
+src/
+  models.py    # HAQR 모델 정의 (HAN + Non-Crossing Quantile Head)
+  data_gen.py  # Dual-Regime AR(3) 데이터 생성
+  utils.py     # PSR·DSR·MDD 계산
+experiment/    # SOTA·불확실성·XAI·경제성·Ablation 검증
 ```
 
----
+## 기술 스택
 
-## 📧 Contact
-
-- **Author**: Kim Jaewon
-- **Email**: [kjw582390@gmail.com]
-
+Python 3.8+ · TensorFlow 2.x · LightGBM · SciPy · Monte Carlo 시뮬레이션 (FastAPI 서빙: alpha-serve)
