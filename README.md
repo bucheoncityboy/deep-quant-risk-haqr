@@ -115,7 +115,14 @@ def calculate_m3_strategy(pred_quantiles, actual_returns, threshold):
 | 경제성 | PSR·DSR 성과 분석 |
 | Ablation | Monte Carlo 구성 제거 연구 |
 
-학습 데이터는 **Dual-Regime AR(3) Process**로 생성했다. Regime 1(Normal)은 φ=(0.25, -0.20, 0.35), Regime 2(Crisis)는 φ=(-0.25, 0.20, -0.35), 전환 확률 0.20, 5,000 스텝.
+학습 데이터는 **Dual-Regime AR(3) Process**로 생성했다.
+
+| 파라미터 | 값 |
+|---|---|
+| Regime 1 (Normal) | φ=(0.25, -0.20, 0.35) |
+| Regime 2 (Crisis) | φ=(-0.25, 0.20, -0.35) |
+| 전환 확률 | 0.20 |
+| 총 스텝 | 5,000 |
 
 ## 저장소 구조
 
