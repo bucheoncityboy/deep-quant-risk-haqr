@@ -6,14 +6,14 @@
 
 ---
 
-> 금융 시계열의 꼬리위험을 정량화하는 모델. 2단계 계층 어텐션으로 피처 중요도를 학습하고, Non-Crossing Quantile Head로 분위수 교차 없는 예측 구간을 만든다. 불확실성 구간을 모델 스스로 출력한다.
+> 금융 시계열의 꼬리위험을 정량화하는 모델이다. 2단계 계층 어텐션으로 피처 중요도를 학습하고, Non-Crossing Quantile Head로 분위수가 서로 교차하지 않는 예측 구간을 만든다. 불확실성 구간은 모델이 스스로 출력한다.
 
 ## ⭐ 성과
 
-- **Sharpe 1.05**, 튜닝된 LGBM(0.82) 대비 개선
-- **Pinball Loss 0.00584**, LGBM(0.00612) 대비 하락
+- **Sharpe 1.05**, 튜닝한 LGBM(0.82)보다 개선
+- **Pinball Loss 0.00584**, LGBM(0.00612)보다 하락
 - **손실구간 91% 적중**
-- **PSR 0.78 · DSR 0.45**, 다중 시도 편향을 보정한 확률적 샤프 지표
+- **PSR 0.78 · DSR 0.45**, 여러 번 시도할 때 생기는 편향을 보정한 확률적 샤프 지표
 - **Non-Crossing 보장**: Q5 < Q50 < Q95를 Softplus 델타로 원천 보장
 - **F-Fidelity XAI 검증 통과**, 어텐션 가중치의 충실성 입증
 
@@ -21,10 +21,10 @@
 
 | 기여 | 내용 |
 |---|---|
-| **Hierarchical Attention Network** | Factor-Level → Group-Level 2단계 어텐션 구조로 피처 중요도를 계층적으로 학습 |
-| **Non-Crossing Quantile Head** | Softplus 기반 델타 구조로 분위수 교차 문제를 원천 해결 (Q5 < Q50 < Q95 보장) |
-| **Intrinsic Uncertainty** | 별도 calibration 없이 모델 자체에서 불확실성 구간을 직접 출력 |
-| **Explainable AI** | F-Fidelity 검증으로 어텐션 가중치의 충실성 입증 |
+| **Hierarchical Attention Network** | Factor-Level→Group-Level 2단계 어텐션으로 피처 중요도를 계층적으로 학습 |
+| **Non-Crossing Quantile Head** | Softplus 델타 구조를 써서 분위수 교차 문제를 원천 차단한다(Q5<Q50<Q95 보장) |
+| **Intrinsic Uncertainty** | 별도 보정(calibration) 없이 모델 자체가 불확실성 구간을 낸다 |
+| **Explainable AI** | F-Fidelity 검증으로 어텐션 가중치가 실제 예측에 충실함을 입증 |
 
 ## 아키텍처
 
@@ -58,7 +58,7 @@
 
 ## 불확실성 인지 포지션 사이징 (M3 전략)
 
-분위수 출력을 그대로 운용에 쓴다. Q50으로 방향을 정하고, Q95-Q05 스프레드가 넓으면(불확실) 사이즈를 줄인다.
+분위수 출력을 그대로 운용에 쓴다. Q50으로 방향을 정하고, Q95-Q05 폭이 넓으면 불확실성이 크다고 보고 포지션 크기를 줄인다.
 
 ```python
 def calculate_m3_strategy(pred_quantiles, actual_returns, threshold):
@@ -79,20 +79,20 @@ def calculate_m3_strategy(pred_quantiles, actual_returns, threshold):
 | 검증 | 내용 |
 |---|---|
 | SOTA | HAQR vs LGBM (N=100) |
-| Lag-Llama | 시계열 기초 모델 비교 |
-| 불확실성 | PICP·MPIW 정량화 검증 |
-| XAI | F-Fidelity 설명가능성 검증 |
-| 경제성 | PSR·DSR 성과 분석 |
-| Ablation | Monte Carlo 구성 제거 연구 |
+| Lag-Llama | 시계열 파운데이션 모델 비교 |
+| 불확실성 | PICP·MPIW로 불확실성 구간 검증 |
+| XAI | F-Fidelity로 설명가능성 검증 |
+| 경제성 | PSR·DSR로 경제적 성과 분석 |
+| Ablation | 몬테카를로 구성 제거 연구 |
 
-학습 데이터는 **Dual-Regime AR(3) Process**로 생성했다.
+학습 데이터는 **이중 국면 AR(3) 프로세스(Dual-Regime AR(3))**로 생성했다.
 
 | 파라미터 | 값 |
 |---|---|
-| Regime 1 (Normal) | φ=(0.25, -0.20, 0.35) |
-| Regime 2 (Crisis) | φ=(-0.25, 0.20, -0.35) |
-| 전환 확률 | 0.20 |
-| 총 스텝 | 5,000 |
+| 국면 1(정상) | φ=(0.25, -0.20, 0.35) |
+| 국면 2(위기) | φ=(-0.25, 0.20, -0.35) |
+| 국면 전환 확률 | 0.20 |
+| 전체 스텝 | 5,000 |
 
 ## 저장소 구조
 
